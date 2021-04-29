@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DaoFileImpl implements IDao {
+    private final String pathToResources = "src/main/resources/";
+    private final String fileName;
     private ObjectInputStream reader;
     private ObjectOutputStream writer;
-    private final String fileName;
 
     public DaoFileImpl(String fileName) {
-        this.fileName = fileName;
+        this.fileName = pathToResources + fileName;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class DaoFileImpl implements IDao {
             reader.close();
         }
         catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
         return null;
@@ -70,8 +71,9 @@ public class DaoFileImpl implements IDao {
             }
         }
         catch (EOFException e) { }
+        catch (FileNotFoundException e) { }
         catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
         return locationList;
