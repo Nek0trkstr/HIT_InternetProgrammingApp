@@ -29,6 +29,15 @@ public class TripMapService {
         dataAccess.saveLocations(locationsList);
     }
 
+    public void editLocation(Location editedLocation) {
+        String locationName = editedLocation.getName();
+        Location oldLocation = dataAccess.getLocation(locationName);
+        if (oldLocation != null) {
+            dataAccess.deleteLocation(locationName);
+            dataAccess.saveLocation(editedLocation);
+        }
+    }
+
     public List<Location> listLocations() {
         return dataAccess.listLocations();
     }

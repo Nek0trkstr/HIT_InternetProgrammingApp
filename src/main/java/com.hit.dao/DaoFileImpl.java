@@ -2,14 +2,21 @@ package com.hit.dao;
 
 import com.hit.dm.Location;
 import java.io.*;
+import java.nio.Buffer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class DaoFileImpl implements IDao {
     private final String pathToResources = "src/main/resources/";
     private final String fileName;
-    private ObjectInputStream reader;
-    private ObjectOutputStream writer;
+    private BufferedWriter writer;
+    private Gson gson = new Gson();
+    private BufferedReader reader;
 
     public DaoFileImpl(String fileName) {
         this.fileName = pathToResources + fileName;
@@ -18,10 +25,13 @@ public class DaoFileImpl implements IDao {
     @Override
     public void saveLocations(List<Location> locationList) {
         try {
-            writer = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-            for (Location location : locationList) {
-                writer.writeObject(location);
-            }
+            writer = new BufferedWriter(new FileWriter(fileName));
+//            for (Location location : locationList) {
+//                String locationJson = gson.toJson(location);
+//                writer.write(locationJson);
+//            }
+            gson.toJson(locationList, writer);
+//            writer.write(locationsJson);
             writer.flush();
             writer.close();
         }
@@ -45,10 +55,13 @@ public class DaoFileImpl implements IDao {
     public Location getLocation(String locationName) {
         Location locationFromFile = null;
         try {
-            reader = new ObjectInputStream(new BufferedInputStream(new FileInputStream(fileName)));
-            while ((locationFromFile = (Location) reader.readObject()) != null) {
-                if (locationFromFile.getName().equals(locationName)) {
-                    return locationFromFile;
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String text = reader.lines().collect(Collectors.joining());
+            gson.fromJson(text, new TypeToken<List<Location>>(){}.getType() );
+            List<Location> locations = gson.fromJson(text, new TypeToken<List<Location>>(){}.getType() );
+            for (Location candidateLocation: locations) {
+                if (candidateLocation.getName().equals(locationName)) {
+                    locationFromFile = candidateLocation;
                 }
             }
             reader.close();
@@ -57,18 +70,15 @@ public class DaoFileImpl implements IDao {
             e.printStackTrace();
         }
 
-        return null;
+        return locationFromFile;
     }
 
     @Override
     public List<Location> listLocations() {
         List<Location> locationList = new ArrayList<>();
-        try (FileInputStream fi = new FileInputStream(fileName)) {
-            Location location = null;
-            reader = new ObjectInputStream(new BufferedInputStream(fi));
-            while ((location = (Location) reader.readObject()) != null) {
-                locationList.add(location);
-            }
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String text = reader.lines().collect(Collectors.joining());
+            locationList = gson.fromJson(text, new TypeToken<List<Location>>(){}.getType() );
         }
         catch (EOFException e) { }
         catch (FileNotFoundException e) { }

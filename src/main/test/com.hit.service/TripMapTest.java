@@ -1,18 +1,19 @@
 package com.hit.service;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hit.algorithm.*;
 import com.hit.dao.*;
 import com.hit.dm.Location;
 import com.hit.dm.Path;
 import com.hit.dm.Place;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class TripMapTest {
     final static String storageFileName = "datasource.txt";
@@ -38,7 +39,7 @@ public class TripMapTest {
 
     @AfterAll
     public static void clean() {
-//        deleteFile(storageFileName);
+        deleteFile(storageFileName);
     }
 
     @Test
@@ -49,6 +50,31 @@ public class TripMapTest {
         Location savedLocation = tripMapService.getLocation(testLocation.getName());
         // Assert
         Assertions.assertTrue(testLocation.getName().equals(savedLocation.getName()));
+    }
+
+    @Test
+    public void testParsingSingleLocation() {
+        Gson gson = new Gson();
+        String generatedJson = gson.toJson(testLocation);
+        try {
+            gson.fromJson(generatedJson, Location.class);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testParsingListOfLocations() {
+        Gson gson = new Gson();
+        List<Location> locationList = new ArrayList<>();
+        locationList.add(testLocation);
+        String serializedList = gson.toJson(locationList);
+        try {
+            gson.fromJson(serializedList, new TypeToken<List<Location>>(){}.getType());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
