@@ -2,7 +2,6 @@ package com.hit.server;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hit.dm.Location;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
