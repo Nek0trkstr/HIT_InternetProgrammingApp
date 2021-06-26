@@ -1,0 +1,1 @@
+{"name":"Great waterfall","description":"Seriously great waterfall","adjList":{{"name":"waterfall"}:[],"entrance":[{"weight":1,"source":{"name":"entrance"},"destination":{"name":"waterfall"}}]},"vertexSet":[{"name":"waterfall"},{"name":"entrance"}],"edgeSet":[{"weight":1,"source":{"name":"entrance"},"destination":{"name":"waterfall"}}]}

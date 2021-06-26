@@ -1,10 +1,13 @@
 package com.hit.service;
 
+import com.hit.algorithm.BellmanFord;
 import com.hit.algorithm.IAlgoSingleSourceShortestPath;
 import com.hit.dao.IDao;
 import com.hit.dm.Location;
 import com.hit.dm.Place;
+import com.hit.graph.GraphPath;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 public class TripMapService {
@@ -37,16 +40,25 @@ public class TripMapService {
         dataAccess.deleteLocation(locationName);
     }
 
-    public int findShortestPath(Location location, Place source, Place destination) {
-        return pathFinder.FindShortestDistance(location, source, destination);
+    public GraphPath findShortestPath(Location location, Place source, Place destination) {
+        return pathFinder.FindShortestPath(location, source, destination);
     }
 
-    public int findShortestPath(String locationName, Place source, Place destination) {
+    public GraphPath findShortestPath(String locationName, Place source, Place destination) {
         Location location = dataAccess.getLocation(locationName);
         if (location == null) {
-            return Integer.MAX_VALUE;
+            throw new InvalidParameterException(String.format("Location with name: %s not found", locationName));
         }
 
-        return pathFinder.FindShortestDistance(location, source, destination);
+        return pathFinder.FindShortestPath(location, source, destination);
+    }
+
+    public void editLocation(Location editedLocation) {
+        String locationName = editedLocation.getName();
+        Location oldLocation = getLocation(locationName);
+        if (oldLocation != null) {
+            deleteLocation(oldLocation.getName());
+            createLocation(editedLocation);
+        }
     }
 }
