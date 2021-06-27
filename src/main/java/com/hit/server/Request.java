@@ -12,21 +12,12 @@ public class Request<T> {
         return body;
     }
 
-    class Headers {
-        private String action;
-        private String controller;
+    public Request (Headers headers, T body) {
+        this.headers = headers;
+        this.body = body;
+    }
 
-        public Headers(String action, String controller) {
-            this.action = action;
-            this.controller = controller;
-        }
-
-        public String getAction() {
-            return action;
-        }
-
-        public String getController() {
-            return controller;
-        }
+    public Request (Headers headers) {
+        this.headers = headers;
     }
 }

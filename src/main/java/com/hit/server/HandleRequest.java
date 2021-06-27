@@ -2,46 +2,55 @@ package com.hit.server;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hit.dm.Location;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.Socket;
+import java.util.List;
 import java.util.Scanner;
 
 public class HandleRequest implements Runnable {
     private Socket socket;
     private Controller tripMapController = new Controller();
+    private Gson parser = new Gson();
 
     public HandleRequest(Socket socket) {
         this.socket = socket;
     }
 
     @Override
-    public void run()  {
-        try(Scanner input = new Scanner(new InputStreamReader(socket.getInputStream()))) {
-            PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            String reqString = input.next();
+    public void run() {
+        try {
+            InputStream is = socket.getInputStream();
+            ObjectInputStream input = new ObjectInputStream(is);
+            ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+            String reqString = (String) input.readObject();
             Gson gson = new Gson();
-
-            Type ref = new TypeToken<Request<Location>>(){}.getType();
-            Request<Location> request= gson.fromJson(reqString, ref);
-
+            Type ref = new TypeToken<Request>(){}.getType();
+            Request request= gson.fromJson(reqString, ref);
             String action = request.getHeaders().getAction();
             String controller = request.getHeaders().getController();
-
-            Location location = request.getBody();
+            String locationName = request.getHeaders().getObjectName();
+            Location location = new Location("lol", "da"); //request.getBody();
             switch (controller) {
-                case "TripMap":
+                case "Location":
                     switch (action) {
                         case "GetLocation":
-                            Location respLocation = tripMapController.getLocation(location.getName());
-                            writer.println(new Response<Location>(200, respLocation));
+                            Location respLocation = tripMapController.getLocation(locationName);
+                            Response<Location> locationResponse = new Response<>(200, respLocation);
+                            String parsedLocationResponse = parser.toJson(locationResponse);
+                            output.writeObject(parsedLocationResponse);
                             break;
+                        case "ListLocation": {
+                            List<Location> locationList = tripMapController.listLocations();
+                            Response<List<Location>> response = new Response<>(200, locationList);
+                            String jsonResponse = parser.toJson(response);
+                            output.writeObject(jsonResponse);
+                            break;
+                        }
                         case "CreateLocation":
                             tripMapController.createLocation(location);
-                            writer.println(new Response<Location>(201, null));
+                            output.writeObject(new Response<Location>(201, null));
                             break;
                         case "EditLocation":
                             tripMapController.editLocation(location);
@@ -49,12 +58,20 @@ public class HandleRequest implements Runnable {
                         case "DELETE":
                             tripMapController.deleteLocation(location.getName());
                             break;
+                        case "FindShortestPath":
+//                            tripMapController.findShortestPath(locationName
+                    break;
+                case "TripMap":
                     }
             }
-            writer.close();
+            output.close();
         }
         catch (IOException ex) {
             ex.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -20,8 +20,7 @@ public class Server implements Runnable {
     public void run() {
         System.out.println( String.format("Server is listening on port %d", port));
         while (true) {
-            try {
-                ServerSocket listener = new ServerSocket(port);
+            try (ServerSocket listener = new ServerSocket(port)){
                 Socket client = listener.accept();
                 HandleRequest requestHandler = new HandleRequest(client);
                 clientThreads.add(requestHandler);
