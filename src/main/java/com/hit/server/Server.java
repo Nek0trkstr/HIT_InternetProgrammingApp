@@ -19,16 +19,16 @@ public class Server implements Runnable {
     @Override
     public void run() {
         System.out.println( String.format("Server is listening on port %d", port));
-        while (true) {
-            try (ServerSocket listener = new ServerSocket(port)){
+        try (ServerSocket listener = new ServerSocket(port)) {
+            while (true) {
                 Socket client = listener.accept();
                 HandleRequest requestHandler = new HandleRequest(client);
                 clientThreads.add(requestHandler);
                 threadPool.execute(requestHandler);
             }
-            catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

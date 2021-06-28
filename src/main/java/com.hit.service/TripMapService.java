@@ -6,6 +6,7 @@ import com.hit.dao.IDao;
 import com.hit.dm.Location;
 import com.hit.dm.Place;
 import com.hit.graph.GraphPath;
+import com.hit.graph.Vertex;
 
 import java.security.InvalidParameterException;
 import java.util.List;
@@ -44,7 +45,7 @@ public class TripMapService {
         return pathFinder.FindShortestPath(location, source, destination);
     }
 
-    public GraphPath findShortestPath(String locationName, Place source, Place destination) {
+    public GraphPath findShortestPath(String locationName, Vertex source, Vertex destination) {
         Location location = dataAccess.getLocation(locationName);
         if (location == null) {
             throw new InvalidParameterException(String.format("Location with name: %s not found", locationName));

@@ -7,6 +7,7 @@ import com.hit.dao.IDao;
 import com.hit.dm.Location;
 import com.hit.dm.Place;
 import com.hit.graph.GraphPath;
+import com.hit.graph.Vertex;
 import com.hit.service.TripMapService;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class Controller {
         tripMapService.editLocation(editedLocation);
     }
 
-    public GraphPath findShortestPath(String locationName, Place source, Place destination) {
+    public GraphPath findShortestPath(String locationName, Vertex source, Vertex destination) {
         return tripMapService.findShortestPath(locationName, source, destination);
     }
 }

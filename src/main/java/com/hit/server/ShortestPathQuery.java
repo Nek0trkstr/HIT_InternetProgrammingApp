@@ -1,13 +1,14 @@
 package com.hit.server;
 
 import com.hit.dm.Place;
+import com.hit.graph.Vertex;
 
 public class ShortestPathQuery {
     private String locationName;
-    private Place source;
-    private Place destination;
+    private Vertex source;
+    private Vertex destination;
 
-    public ShortestPathQuery(String locationName, Place source, Place destination) {
+    public ShortestPathQuery(String locationName, Vertex source, Vertex destination) {
         this.locationName = locationName;
         this.source = source;
         this.destination = destination;
@@ -17,11 +18,11 @@ public class ShortestPathQuery {
         return this.locationName;
     }
 
-    public Place getSource() {
+    public Vertex getSource() {
         return this.source;
     }
 
-    public Place getDestination() {
+    public Vertex getDestination() {
         return this.destination;
     }
 }
